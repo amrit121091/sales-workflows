@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MYCPE ONE – Sales Workflows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --ink:#262448; --muted:#625F80; --line:#DEDCEB;
+  --brand:#4A4FD1; --brand-soft:#ECEBFC;
+  --grad:linear-gradient(110deg,#5EC8F3 0%,#426DE8 45%,#6438BE 100%); --grad2:linear-gradient(120deg,#426DE8,#6438BE); --client:#0E8A6A; --client-soft:#E2F4EE;
+  --loop:#B5651D; --loop-soft:#FBEFE3; --stop:#B23A48; --stop-soft:#F9E6E8;
+  color-scheme:light;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 24px 64px}
+
+header{padding-bottom:24px;border-bottom:1px solid var(--line)}
+.topbar{height:4px;background:var(--grad)}
+.logo{display:block;height:34px;width:auto;margin-bottom:14px}
+h1,h2,h3,h4,.title,.phead,.bhead,.oq,.blabel,.stab b,.tnode b,.sc b{font-family:Poppins,Inter,system-ui,sans-serif}
+h1{margin:6px 0 0;font-size:clamp(28px,4vw,40px);line-height:1.12;font-weight:600;letter-spacing:-.015em}
+.lede{margin:10px 0 0;color:var(--muted);max-width:62ch}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.tab{all:unset;box-sizing:border-box;cursor:pointer;font-size:14px;padding:8px 16px;border-radius:999px;border:1px solid var(--line);color:var(--muted);font-weight:500;background:var(--surface)}
+.tab[aria-selected="true"]{background:var(--grad2);border-color:transparent;color:#fff;font-weight:600}
+.tab:focus-visible,.stab:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+.tab[disabled]{cursor:default;opacity:.55;background:transparent}
+
+.optbar{margin-top:28px;padding:22px 24px 24px;background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.optbar .oq{margin:0;font-weight:600;font-size:16px}
+.optbar .oh{margin:2px 0 0;color:var(--muted);font-size:14.5px}
+.subtabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:16px}
+.stab{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1.5px solid var(--line);background:var(--bg)}
+.stab .on{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:700;font-size:15px;background:var(--surface);border:1.5px solid var(--line);color:var(--muted);flex:none}
+.stab small{display:block;font-size:13px;color:var(--muted);font-weight:500}
+.stab b{display:block;font-size:16px;font-weight:600;color:var(--ink);line-height:1.3}
+.stab[aria-selected="true"]{border-color:var(--brand);background:var(--brand-soft)}
+.stab[aria-selected="true"] .on{background:var(--grad2);border-color:transparent;color:#fff}
+.stab[aria-selected="true"] small{color:var(--brand)}
+.obadge{display:inline-block;font-size:13px;font-weight:600;color:var(--brand);background:var(--brand-soft);padding:3px 10px;border-radius:999px;margin-bottom:8px}
+.path.opt{margin-top:40px}
+
+.path{margin-top:30px}
+.path h2{margin:0;font-size:21px;font-weight:600}
+.path .pdesc{margin:4px 0 0;color:var(--muted);font-size:15px;max-width:70ch}
+
+.flow{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(var(--n),1fr)}
+.step{position:relative;padding:0 10px}
+.step:not(:last-child)::before{content:"";position:absolute;top:33px;left:calc(50% + 36px);right:-2px;height:2px;background:var(--line)}
+.step:not(:last-child)::after{content:"";position:absolute;top:28px;right:-5px;width:12px;height:12px;border-top:2px solid var(--line);border-right:2px solid var(--line);transform:rotate(45deg)}
+.node{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;align-items:center;text-align:center;width:100%;padding-bottom:10px;border-radius:14px}
+.node:focus-visible,.ms:focus-visible{outline:2px solid var(--brand);outline-offset:4px}
+.dot{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:2px solid var(--line);font-weight:700;font-size:20px;color:var(--muted);transition:background .2s,border-color .2s,color .2s;flex:none}
+.is-loop .dot{border-style:dashed;border-color:var(--loop);color:var(--loop)}
+.is-client .dot{border-color:var(--client);color:var(--client)}
+.is-decide .dot{border-radius:16px;transform:rotate(45deg);width:56px;height:56px;margin:6px 0;border-color:var(--brand);color:var(--brand)}
+.is-decide .dot span{transform:rotate(-45deg)}
+.node[aria-pressed="true"] .dot{background:var(--grad2);border-color:transparent;color:#fff}
+.is-loop .node[aria-pressed="true"] .dot{background:var(--loop);border-color:var(--loop);border-style:solid;color:var(--surface)}
+.is-client .node[aria-pressed="true"] .dot{background:var(--client);border-color:var(--client);color:var(--surface)}
+.title{margin-top:14px;font-weight:600;font-size:16px;line-height:1.3}
+.sub{margin-top:4px;font-size:13.5px;color:var(--muted);line-height:1.4}
+.tags{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:10px}
+.tag{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--brand-soft);color:var(--brand);font-weight:500}
+.is-loop .tag{background:var(--loop-soft);color:var(--loop)}
+.is-client .tag{background:var(--client-soft);color:var(--client)}
+.loopnote{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:12.5px;color:var(--loop);font-weight:500}
+
+/* Option 2: continuous trial flow */
+.tflow{margin-top:30px;display:flex;flex-direction:column;align-items:center}
+.tnode{all:unset;box-sizing:border-box;cursor:pointer;width:min(440px,100%);display:flex;gap:14px;align-items:center;text-align:left;padding:13px 16px;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);--c:var(--brand);--cs:var(--brand-soft)}
+.tnode:focus-visible{outline:2px solid var(--brand);outline-offset:4px}
+.tnode .n{width:38px;height:38px;border-radius:50%;border:2px solid var(--c);color:var(--c);display:grid;place-items:center;font-weight:700;font-size:15px;flex:none;background:var(--surface)}
+.tnode.decide .n{border-radius:9px;transform:rotate(45deg);width:30px;height:30px;margin:4px}
+.tnode.decide .n span{transform:rotate(-45deg)}
+.tnode.loop{--c:var(--loop);--cs:var(--loop-soft)}
+.tnode.loop .n{border-style:dashed}
+.tnode b{display:block;font-size:16px;font-weight:600;line-height:1.3}
+.tnode .t{display:block;font-size:13.5px;color:var(--muted);line-height:1.4;margin-top:2px}
+.tnode[aria-pressed="true"]{background:var(--cs);border-color:var(--c)}
+.tnode[aria-pressed="true"] .n{background:var(--c);color:var(--surface);border-style:solid}
+.vl{width:2px;height:30px;background:var(--line);position:relative;flex:none}
+.vl::after{content:"";position:absolute;bottom:1px;left:50%;margin-left:-5px;width:8px;height:8px;border-right:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+.vl.plain{height:26px}
+.vl.plain::after{display:none}
+.bgrid2{display:grid;grid-template-columns:repeat(var(--b,3),1fr);width:100%;position:relative}
+.bgrid2::before{content:"";position:absolute;top:0;left:calc(100% / (2 * var(--b,3)));right:calc(100% / (2 * var(--b,3)));height:2px;background:var(--line)}
+.bcol{display:flex;flex-direction:column;align-items:center;padding:0 8px}
+.bcol.con{--c:var(--client);--cs:var(--client-soft)}
+.bcol.ext{--c:var(--loop);--cs:var(--loop-soft)}
+.bcol.can{--c:var(--stop);--cs:var(--stop-soft)}
+.bcol .tnode{--c:inherit;--cs:inherit;width:100%}
+.bcol .vl{background:var(--c)}
+.bcol .vl::after{border-color:var(--c)}
+.bcol .vl.top{height:26px}
+.blabel{font-weight:700;font-size:14.5px;color:var(--c);background:var(--cs);padding:6px 16px;border-radius:999px;border:1.5px solid var(--c)}
+.bdesc{font-size:13.5px;color:var(--muted);margin:6px 0 0;text-align:center}
+.fork{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.fork .or{font-size:13px;color:var(--muted)}
+.pill{font-size:13px;font-weight:600;padding:5px 12px;border-radius:999px}
+.pill.con{background:var(--client-soft);color:var(--client);border:1.5px solid var(--client)}
+.pill.can{background:var(--stop-soft);color:var(--stop);border:1.5px solid var(--stop)}
+@media (max-width:900px){
+  .bgrid2{grid-template-columns:1fr;gap:10px}
+  .bgrid2::before{display:none}
+}
+
+/* Phased options (Website Development) */
+.phase{margin-top:30px}
+.phase.shared{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 20px 14px}
+.phead{margin:0;font-weight:600;font-size:17px}
+.phase .pdesc{margin:2px 0 0;font-size:14.5px}
+.sbadge{display:inline-block;font-size:12.5px;font-weight:600;color:var(--client);background:var(--client-soft);padding:3px 10px;border-radius:999px;margin-left:8px;vertical-align:2px}
+.phlink{display:flex;justify-content:center;margin-top:14px}
+.phase .flow{margin-top:22px}
+
+/* Other statuses (Offshoring after sign-up) */
+.side{margin-top:34px;padding-top:26px;border-top:1px dashed var(--line)}
+.side .bhead{margin:0;font-weight:600;font-size:17px}
+.side .bsub{margin:2px 0 0;color:var(--muted);font-size:14.5px}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.sc{all:unset;box-sizing:border-box;cursor:pointer;display:block;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:14px;padding:14px 16px}
+.sc:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+.sc.ext{--c:var(--loop);--cs:var(--loop-soft)}
+.sc.can{--c:var(--stop);--cs:var(--stop-soft)}
+.sc.brand{--c:var(--brand);--cs:var(--brand-soft)}
+.sc[aria-pressed="true"]{background:var(--cs)}
+.sc b{display:block;font-size:16px;font-weight:600;color:var(--c)}
+.sc .when{display:inline-block;margin-top:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--cs);color:var(--c)}
+.sc .t{display:block;margin-top:8px;font-size:13.5px;color:var(--muted);line-height:1.45}
+@media (max-width:1000px){.sgrid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.sgrid{grid-template-columns:1fr}}
+
+/* Detail */
+.detail{margin-top:36px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px 30px;display:grid;grid-template-columns:1.2fr 1fr;gap:24px 40px}
+.detail h3{margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em}
+.detail .num{color:var(--muted);font-size:14px;font-weight:500}
+.detail p{margin:12px 0 0;max-width:62ch}
+.detail ul{margin:10px 0 0;padding-left:20px}
+.detail li{margin:4px 0}
+.detail .lbl{margin-top:16px;font-weight:600}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:12px 18px;align-content:start}
+dt{color:var(--muted);font-size:14px}
+dd{margin:0;font-weight:500}
+
+.src{grid-column:1/-1;border-top:1px solid var(--line);padding-top:22px;display:grid;grid-template-columns:1fr 1fr;gap:24px 40px}
+.src h4{margin:0;font-size:18px;font-weight:600}
+.src .in h4{color:var(--brand)}
+.src .out h4{color:var(--loop)}
+.src .dir{font-size:14px;color:var(--muted);margin:2px 0 0}
+.grp{margin-top:16px}
+.grp b{font-size:14px;font-weight:600;display:block;margin-bottom:8px}
+.grp b small{font-weight:500;color:var(--muted);font-size:13px;margin-left:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:13.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+.chip i{font-style:normal;color:var(--muted);font-size:12.5px}
+
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+
+@media (max-width:900px){
+  .flow{grid-template-columns:1fr}
+  .step{padding:0 0 28px}
+  .step:not(:last-child)::before{top:76px;left:33px;right:auto;width:2px;height:calc(100% - 78px)}
+  .step:not(:last-child)::after{top:auto;bottom:8px;left:27px;right:auto;transform:rotate(135deg)}
+  .node{flex-direction:row;align-items:flex-start;text-align:left;gap:18px}
+  .is-decide .node{gap:24px;padding-left:6px}
+  .title{margin-top:4px}
+  .tags{justify-content:flex-start}
+  .bgrid{grid-template-columns:1fr}
+  .detail{grid-template-columns:1fr;padding:22px}
+  .src{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="topbar" aria-hidden="true"></div>
+<div class="wrap">
+  <header>
+    <img class="logo" src="data:image/png;base64,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" alt="MYCPE ONE" width="185" height="30">
+    <h1 id="h1">Sales workflows</h1>
+    <p class="lede">How a prospect moves from first contact to becoming a client, business by business. Select any step to learn what happens there.</p>
+    <div class="tabs" role="tablist" aria-label="Businesses">
+      <button class="tab" role="tab" data-biz="offshoring" aria-selected="true">Offshoring Services</button>
+      <button class="tab" role="tab" data-biz="cpe" aria-selected="false">CPE for Teams</button>
+      <button class="tab" role="tab" data-biz="web" aria-selected="false">Website Development</button>
+      <button class="tab" role="tab" data-biz="dm" aria-selected="false">Digital Marketing</button>
+    </div>
+  </header>
+
+  <main id="main"></main>
+
+  <footer>MYCPE ONE sales process overview, for team learning</footer>
+</div>
+
+<script>
+const loopIcon='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>';
+
+const SOURCES={
+  inbound:{title:"Inbound",dir:"The prospect finds us and reaches out",groups:[
+    {name:"Marketing",items:["Google Search","AI Search <i>(Gemini, ChatGPT, Copilot)</i>","Website Inquiries","ChatGPT Ads","Inbound Calls","Email Campaigns"]},
+    {name:"Referrals",items:["CTA Referral","Client Referrals"]}
+  ]},
+  outbound:{title:"Outbound",dir:"We reach out to the prospect",groups:[
+    {name:"Sales",items:["LinkedIn Direct Messages","LinkedIn Referral Messages","Cold Calling","Webinars","Crisp Chats"]},
+    {name:"Field & Partnerships",items:["Conferences","Partnerships","Alliances"]}
+  ]}
+};
+const srcCol=(k,cls)=>{const s=SOURCES[k];return `<div class="${cls}"><h4>${s.title}</h4><p class="dir">${s.dir}</p>${s.groups.map(g=>`<div class="grp"><b>${g.name}<small>${g.items.length} sources</small></b><div class="chips">${g.items.map(i=>`<span class="chip">${i}</span>`).join('')}</div></div>`).join('')}</div>`;};
+const srcHTML=`<div class="src">${srcCol('inbound','in')}${srcCol('outbound','out')}</div>`;
+
+const followUps = {
+  title:"Follow-ups", sub:"Across four channels", tags:["Email","Phone call","Text","LinkedIn"], kind:"loop",
+  who:"Sales team", how:"Email, phone call, text, LinkedIn",
+  body:"After the call, the sales team stays in touch with the prospect until they’re ready to move ahead. Follow-ups repeat as many times as needed, using whichever channel works best for that prospect.",
+  lbl:"Channels we use", points:["Email","Phone call","Text message","LinkedIn"],
+  next:"The prospect is ready to sign up"
+};
+
+const data = {
+  offshoring:{
+    name:"Offshoring Services",
+    paths:[{
+      name:"From first contact to client",
+      desc:"Every offshoring prospect follows this one path.",
+      steps:[
+        { title:"Lead comes in", sub:"Inbound or outbound", tags:["Inbound","Outbound"],
+          who:"Sales team", how:"Inbound and outbound lead sources", sources:true,
+          body:"A prospect reaches us in one of two ways: they find us through our marketing or a referral and get in touch (inbound), or our sales and partnerships teams reach out to them (outbound). All lead sources are listed below. Either way, the goal is to book an appointment.",
+          next:"An appointment is booked" },
+        { title:"Appointment booked", sub:"Scheduled through Calendly", tags:["Calendly"],
+          who:"Sales team", how:"Calendly",
+          body:"The prospect picks a time to speak with us through Calendly, from a link we share or from the website.",
+          next:"The prospect joins the call" },
+        { title:"Sales call", sub:"We explain how it all works", tags:["Process","Onboarding","Sign-up","Pricing"],
+          who:"Sales team", how:"Video or phone call",
+          body:"On the sales call we walk the prospect through how offshoring with MYCPE ONE works.",
+          lbl:"What we cover", points:["How the process works","Onboarding","The sign-up process","Pricing policies"],
+          next:"The call is complete" },
+        followUps,
+        { title:"Sign-up", sub:"The prospect signs up", tags:["Sign-up"],
+          who:"Sales team", how:"Offshore Services sign-up",
+          body:"The prospect completes the sign-up. This is the moment the deal is won.",
+          next:"Sign-up is complete" },
+        { title:"Client, handed to CTAT", sub:"Lead becomes a client", tags:["CTAT"], kind:"client",
+          who:"CTAT", how:"Internal handover",
+          body:"Once sign-up is done, the lead becomes a client and is handed over to CTAT, who take it forward from here.",
+          next:"End of the sales process" }
+      ]
+    }]
+  },
+  cpe:{
+    name:"CPE for Teams",
+    paths:[
+      { tab:"Option 1: Inbound & outbound sales",
+        name:"Inbound and outbound sales",
+        desc:"Prospects who come to us, or whom we reach out to, book a demo first and then follow the same follow-up and sign-up process.",
+        steps:[
+          { title:"Lead comes in", sub:"Inbound or outbound", tags:["Inbound","Outbound"],
+            who:"Sales team", how:"Inbound and outbound lead sources", sources:true,
+            body:"A firm either finds us through our marketing or a referral and gets in touch about CPE for Teams (inbound), or our sales and partnerships teams reach out to them (outbound). All lead sources are listed below. Either way, the next step is booking a demo.",
+            next:"A demo is booked" },
+          { title:"Demo booked", sub:"Scheduled through Calendly", tags:["Calendly"],
+            who:"Sales team", how:"Calendly",
+            body:"The prospect picks a time for a demo through Calendly, from a link we share or from the website.",
+            next:"The prospect joins the demo" },
+          { title:"Product demo", sub:"We show CPE for Teams in action", tags:["Live demo"],
+            who:"Sales team", how:"Video call",
+            body:"On the call we showcase the CPE for Teams platform so the firm can see how it would work for their team.",
+            next:"The demo is complete" },
+          followUps,
+          { title:"Sign-up or invoice", sub:"Two ways to come on board", tags:["Sign-up","Invoice"],
+            who:"Sales team", how:"Online sign-up or invoice",
+            body:"The firm comes on board in one of two ways. Most sign up directly. Sometimes the firm asks for an invoice, or we send one, and they come on board once it’s settled.",
+            lbl:"Two ways to close", points:["Direct sign-up to a paid account","Invoice sent and paid, then onboarded"],
+            next:"The account is paid" },
+          { title:"Paid account", sub:"Firm onboarded as a client", tags:["Client"], kind:"client",
+            who:"MYCPE ONE team", how:"Onboarding",
+            body:"The firm is now a paying CPE for Teams client and is onboarded onto the platform.",
+            next:"End of the sales process" }
+        ]
+      },
+      { tab:"Option 2: 30-day free trial",
+        name:"Direct 30-day free trial",
+        desc:"Some firms skip the demo and start a free trial on their own. At the end of 30 days, the firm signs up, extends the trial or cancels. An extended trial then ends in either a sign-up or a cancellation.",
+        trial:true,
+        steps:[
+          { title:"Free trial starts", sub:"The firm starts on its own", tags:["No demo needed"],
+            who:"The firm", how:"CPE for Teams free trial",
+            body:"Instead of booking a demo, the firm starts a free trial of CPE for Teams directly. They get 30 days of free access so their team can try the platform before paying.",
+            next:"The 30-day trial begins" },
+          { title:"30-day trial", sub:"The team uses the platform", tags:["30 days free"], kind:"loop", loopnote:"Sales follows up",
+            who:"The firm, supported by the sales team", how:"CPE for Teams platform; email, phone call, text, LinkedIn",
+            body:"For 30 days, the firm’s team uses CPE for Teams to see whether it fits their needs. During this time, the sales team follows up the same way as in Option 1, to answer questions and help the firm get the most out of the trial.",
+            lbl:"During the trial", points:["The firm’s team tries the platform","Sales follows up by email, phone call, text and LinkedIn","Sales helps the firm decide before the trial ends"],
+            next:"The trial reaches day 30" },
+          { title:"Trial ends", sub:"Time to decide", tags:["Decision"], kind:"decide",
+            who:"The firm, with the sales team", how:"Follow-up with the firm",
+            body:"When the 30 days are up, the firm decides what to do next. There are three possible outcomes, shown below.",
+            lbl:"Three possible outcomes", points:["Sign up for a paid account","Extend the trial for more time","Cancel the trial"],
+            next:"Sign up, extend or cancel" }
+        ],
+        branches:[
+          { cls:"con", title:"Sign up", desc:"The trial becomes a paid account", steps:[
+            { title:"Firm decides to sign up", t:"Happy with the trial",
+              who:"The firm, with the sales team", how:"Follow-up with the firm",
+              body:"The firm has seen the value of CPE for Teams during the trial and decides to continue as a paying client.",
+              next:"The firm signs up or asks for an invoice" },
+            { title:"Sign-up or invoice", t:"Two ways to pay",
+              who:"Sales team", how:"Online sign-up or invoice",
+              body:"Just like Option 1, the firm comes on board in one of two ways: signing up directly for a paid account, or receiving an invoice and paying it.",
+              lbl:"Two ways to close", points:["Direct sign-up to a paid account","Invoice sent and paid, then onboarded"],
+              next:"The account is paid" },
+            { title:"Paid account", t:"Onboarded as a client", kind:"client",
+              who:"MYCPE ONE team", how:"Onboarding",
+              body:"The trial is converted into a paid account and the firm is onboarded as a CPE for Teams client.",
+              next:"End of the sales process" }
+          ]},
+          { cls:"ext", title:"Extended", desc:"More time before deciding", steps:[
+            { title:"Trial extended", t:"The firm needs more time",
+              who:"Sales team", how:"Trial extension",
+              body:"Sometimes a firm needs more time to evaluate, for example because not all of their team has had a chance to use the platform. In that case, the trial is extended instead of ending.",
+              next:"The extended trial begins" },
+            { title:"Extended trial", t:"Sales keeps following up",
+              who:"The firm, supported by the sales team", how:"CPE for Teams platform; email, phone call, text, LinkedIn",
+              body:"The firm keeps using the platform for the extra time. The sales team continues to follow up and help the firm reach a decision.",
+              next:"The extension ends" },
+            { title:"Extension ends", t:"A final decision", pills:true,
+              who:"The firm, with the sales team", how:"Follow-up with the firm",
+              body:"When the extension ends, the firm makes a final decision. An extended trial has only two outcomes: it is either signed up as a paid account or cancelled.",
+              lbl:"Two possible outcomes", points:["Sign up: same as the Sign up path, by direct sign-up or invoice, then onboarded as a paid client","Cancelled: same as the Cancelled path, and the trial closes"],
+              next:"Paid account or cancelled" }
+          ]},
+          { cls:"can", title:"Cancelled", desc:"The firm doesn’t continue", steps:[
+            { title:"Firm decides not to continue", t:"Not the right fit for now",
+              who:"The firm", how:"Follow-up with the firm",
+              body:"After the trial, the firm decides not to move ahead with CPE for Teams.",
+              next:"The trial is cancelled" },
+            { title:"Trial cancelled", t:"The trial closes",
+              who:"Sales team", how:"Trial cancellation",
+              body:"The trial is cancelled and closes. The firm does not become a paying client.",
+              next:"End of the trial" }
+          ]}
+        ]
+      }
+    ]
+  }
+};
+
+const webAfterSignup = {
+  shared:true,
+  title:"After trial sign-up",
+  desc:"From here, every firm follows the same steps, whichever option they came through.",
+  steps:[
+    { title:"Onboarding call", sub:"We set up the trial", tags:["Intake form"],
+      who:"MYCPE ONE team", how:"Onboarding call",
+      body:"Once the trial sign-up is done, we get on an onboarding call with the firm and set up their trial. During this call, we also give them an intake form.",
+      lbl:"On the onboarding call", points:["Set up the firm’s trial","Share the intake form"],
+      next:"The firm fills in the intake form" },
+    { title:"Intake form", sub:"The firm fills in their details", tags:["All details"],
+      who:"The firm", how:"Intake form",
+      body:"The firm fills in the intake form with all the details we need to build their website.",
+      next:"We start building the website" },
+    { title:"Website on staging", sub:"Ready within 7 days", tags:["Within 7 days","Staging server"],
+      who:"Website development team", how:"Staging server",
+      body:"Using the intake form details, we build the firm’s website and put it live on our staging server within 7 days, so the firm can see it before it goes public.",
+      next:"The website moves to the firm’s domain" },
+    { title:"Live on the domain", sub:"After 7 days", tags:["Firm’s domain"],
+      who:"Website development team", how:"The firm’s own domain",
+      body:"After 7 days, the website goes live on the firm’s own domain.",
+      next:"The trial continues until day 60" },
+    { title:"Account charged", sub:"After 60 days", tags:["Day 60","Monthly","Annual, 10% off"], kind:"client",
+      who:"MYCPE ONE team", how:"Payment details on file",
+      body:"60 days after the trial starts, the account is charged using the payment details the firm added at sign-up. The firm is now a paying client, billed either monthly or annually.",
+      lbl:"Two billing options", points:["Monthly billing: charged every month","Annual billing: charged once a year, with a 10% discount"],
+      next:"End of the sales process" }
+  ]
+};
+
+data.web = {
+  name:"Website Development",
+  paths:[
+    { tab:"Option 1: Inbound & outbound sales",
+      name:"Inbound and outbound sales",
+      desc:"Prospects who come to us, or whom we reach out to, have a call with us first. On the call we send them the trial sign-up link.",
+      steps:[],
+      phases:[
+        { title:"Getting to trial sign-up", desc:"Same route as our other businesses: a call first, then the trial sign-up link.",
+          steps:[
+            { title:"Lead comes in", sub:"Inbound or outbound", tags:["Inbound","Outbound"],
+              who:"Sales team", how:"Inbound and outbound lead sources", sources:true,
+              body:"A firm either finds us through our marketing or a referral and gets in touch about a website (inbound), or our sales and partnerships teams reach out to them (outbound). All lead sources are listed below. Either way, the next step is booking a call.",
+              next:"A call is booked" },
+            { title:"Call booked", sub:"Scheduled through Calendly", tags:["Calendly"],
+              who:"Sales team", how:"Calendly",
+              body:"The prospect picks a time to speak with us through Calendly, from a link we share or from the website.",
+              next:"The prospect joins the call" },
+            { title:"Sales call", sub:"We send the trial sign-up link", tags:["Trial sign-up link"],
+              who:"Sales team", how:"Video or phone call",
+              body:"On the call we explain our website development service and how the trial works, then send the firm the trial sign-up link.",
+              next:"The firm receives the trial sign-up link" },
+            {...followUps, next:"The firm signs up for the trial"},
+            { title:"Trial sign-up", sub:"With payment details", tags:["Payment details"],
+              who:"The firm", how:"Trial sign-up link",
+              body:"The firm signs up for the trial through the link and adds their payment details. Nothing is charged yet: the account is only charged after 60 days.",
+              next:"The onboarding call" }
+          ]},
+        webAfterSignup
+      ]
+    },
+    { tab:"Option 2: Direct trial sign-up",
+      name:"Direct trial sign-up",
+      desc:"Some firms skip the call and sign up for the trial on their own, adding their payment details at sign-up.",
+      steps:[],
+      phases:[
+        { title:"Getting to trial sign-up", desc:"No call needed: the firm signs up on its own.",
+          steps:[
+            { title:"Direct trial sign-up", sub:"The firm starts on its own", tags:["No call needed"],
+              who:"The firm", how:"Trial sign-up",
+              body:"Instead of booking a call, the firm signs up for the website development trial directly.",
+              next:"The firm adds payment details" },
+            { title:"Payment details", sub:"Added at sign-up", tags:["Charged after 60 days"],
+              who:"The firm", how:"Trial sign-up",
+              body:"As part of signing up, the firm adds their payment details. Nothing is charged yet: the account is only charged after 60 days.",
+              next:"The onboarding call" }
+          ]},
+        webAfterSignup
+      ]
+    }
+  ]
+};
+
+function stepLI(s,idx,num){
+  const mark=s.kind==='client'?'✓':(s.kind==='decide'?'?':num);
+  return `<li class="step${s.kind?` is-${s.kind}`:''}"><button class="node" type="button" aria-pressed="false" data-i="${idx}">
+    <span class="dot"><span>${mark}</span></span>
+    <span>
+      <div class="title">${s.title}</div>
+      <div class="sub">${s.sub}</div>
+      <div class="tags">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      ${s.kind==='loop'?`<div class="loopnote">${loopIcon} ${s.loopnote||'Repeats until sign-up'}</div>`:''}
+    </span></button></li>`;
+}
+
+// Offshoring: two stages
+const off = data.offshoring;
+off.pick = { q:"Choose a stage", h:"Follow a prospect through the sales process, then follow the client through onboarding after sign-up." };
+Object.assign(off.paths[0], { tab:"Stage 1: Sales process", name:"Sales process", desc:"From first contact to sign-up, when the lead becomes a client and is handed over to CTAT." });
+off.paths[0].steps[5].next = "Stage 2: After sign-up";
+off.paths.push({
+  tab:"Stage 2: After sign-up",
+  name:"After sign-up",
+  desc:"Once a client signs up, their account moves through these statuses. Most clients follow the main path to Active. The other statuses below cover what happens when things don’t go to plan.",
+  steps:[
+    { title:"Assign to Employee", sub:"An owner for the client", tags:["Status 1"],
+      who:"CTAT", how:"Internal assignment",
+      body:"After the handover, the new client is assigned to a team member, who looks after the client through onboarding.",
+      next:"Introduction Email Sent" },
+    { title:"Introduction Email Sent", sub:"We introduce ourselves", tags:["Status 2"],
+      who:"Assigned team member", how:"Email",
+      body:"The assigned team member sends the client an introduction email to start onboarding.",
+      next:"Resumes Sent" },
+    { title:"Resumes Sent", sub:"Candidates shared", tags:["Status 3"],
+      who:"Assigned team member", how:"Email",
+      body:"We source suitable candidates for the client’s requirements and send them their resumes.",
+      next:"Interview Done" },
+    { title:"Interview Done", sub:"The client meets candidates", tags:["Status 4"],
+      who:"The client and the candidates", how:"Interview",
+      body:"The client interviews the candidates whose resumes they liked.",
+      next:"Staff Confirmed" },
+    { title:"Staff Confirmed", sub:"The team is chosen", tags:["Status 5"],
+      who:"The client", how:"Confirmation to MYCPE ONE",
+      body:"The client confirms the staff they want to hire.",
+      next:"Active" },
+    { title:"Active", sub:"Staff working, client billed", tags:["Weekly invoicing"], kind:"client",
+      who:"CTAT", how:"Weekly invoice",
+      body:"The client is now active: their staff are in place, and invoicing starts on a weekly basis.",
+      lbl:"What changes at Active", points:["The client’s confirmed staff start working","Invoicing starts, sent weekly"],
+      next:"The ongoing client relationship" }
+  ],
+  sideTitle:"Other statuses",
+  sideDesc:"A client can move to one of these statuses instead of following the main path. Select one to learn more.",
+  side:[
+    { cls:"ext", title:"On Hold", when:"During onboarding", t:"Onboarding is paused for now.",
+      who:"CTAT", how:"Status update",
+      body:"The client’s onboarding is put on hold. It is paused rather than closed, so it can pick up again later.",
+      next:"Onboarding picks up again when the client is ready" },
+    { cls:"can", title:"Unsuccessful Onboarding", when:"During onboarding", t:"We could not source suitable candidates.",
+      who:"CTAT", how:"Status update",
+      body:"If we are unable to source suitable candidates for the client, onboarding is marked as unsuccessful.",
+      next:"Onboarding closes" },
+    { cls:"brand", title:"Back to Sales", when:"Client unresponsive", t:"Sales finds out why and plans a future date.",
+      who:"Sales team", how:"Email, phone call, text, LinkedIn",
+      body:"If the client becomes unresponsive, the account goes back to the sales team. Sales tries to understand the reason and agree on a future date to pick things up again.",
+      lbl:"What Sales does", points:["Find out why the client went quiet","Agree on a future date to restart"],
+      next:"Onboarding restarts on the agreed date" },
+    { cls:"can", title:"Lost", when:"After Active", t:"The client ends the relationship.",
+      who:"CTAT", how:"Status update",
+      body:"After working with us in an active relationship, the client decides to terminate the engagement.",
+      next:"The client relationship ends" }
+  ]
+});
+
+// CPE for Teams: after onboarding
+const cpe = data.cpe;
+cpe.pick = { q:"Choose a view", h:"A firm can come on board in two ways. The third view shows what happens once they’re a client: users, renewal and win-back." };
+cpe.paths[0].steps[5].next = "See After onboarding: users, renewal and win-back";
+cpe.paths[1].branches[0].steps[2].next = "See After onboarding: users, renewal and win-back";
+cpe.paths.push({
+  tab:"After onboarding: Users, renewal & win-back",
+  name:"After onboarding",
+  desc:"Once a firm is a paying client, their users are onboarded and the account runs until its renewal date. Users can be added or removed along the way. At renewal, the account is either renewed or cancelled, and a cancelled firm can be won back later.",
+  trial:true,
+  steps:[
+    { title:"Users onboarded", sub:"The firm’s team is set up", tags:["Client"],
+      who:"MYCPE ONE team", how:"CPE for Teams platform",
+      body:"Once the firm has a paid account, from either option, their users are onboarded onto CPE for Teams and can start using the platform.",
+      next:"The account runs until its renewal date" },
+    { title:"Mid-year onboarding", sub:"Same renewal date", tags:["One renewal date"],
+      who:"MYCPE ONE team", how:"CPE for Teams account",
+      body:"Users who are onboarded partway through the year don’t get a separate renewal date. They join the firm’s account and renew on the same date as everyone else, so the whole firm renews together.",
+      next:"Users can be adjusted during the year" },
+    { title:"Adjust users", sub:"Add or remove users", tags:["Add","Remove"], kind:"loop", loopnote:"Any time before renewal",
+      who:"The firm, with the MYCPE ONE team", how:"CPE for Teams account",
+      body:"As the firm’s team changes, users can be added to or removed from the account.",
+      lbl:"Two kinds of adjustment", points:["Add users, for example when new staff join","Remove users, for example when staff leave"],
+      next:"The renewal date arrives" },
+    { title:"Renewal", sub:"Renew or cancel", tags:["Decision"], kind:"decide",
+      who:"The firm, with the MYCPE ONE team", how:"Renewal",
+      body:"On the renewal date, the firm decides whether to continue with CPE for Teams for another term.",
+      lbl:"Two possible outcomes", points:["Renewed: the account continues","Cancelled: the account ends, and we can try to win them back later"],
+      next:"Renewed or cancelled" }
+  ],
+  branches:[
+    { cls:"con", title:"Renewed", desc:"The firm continues with us", steps:[
+      { title:"Account renewed", t:"Another term begins",
+        who:"MYCPE ONE team", how:"Renewal",
+        body:"The firm renews its CPE for Teams account and continues for another term.",
+        next:"The account continues" },
+      { title:"Account continues", t:"Users can still be adjusted", kind:"client",
+        who:"MYCPE ONE team", how:"CPE for Teams account",
+        body:"The account carries on as before. Users can still be added or removed, and mid-year additions keep the same renewal date, until the next renewal comes around.",
+        next:"The next renewal" }
+    ]},
+    { cls:"can", title:"Cancelled", desc:"The firm doesn’t renew", steps:[
+      { title:"Account cancelled", t:"The firm leaves at renewal",
+        who:"The firm", how:"Renewal",
+        body:"The firm decides not to renew, and the account is cancelled.",
+        next:"We can try to win them back later" },
+      { title:"Win back", t:"We reach out again later", pills:[["con","Back as a client"]],
+        who:"Sales team", how:"Email, phone call, text, LinkedIn",
+        body:"A cancelled firm isn’t gone for good. Later on, we reach out again to win them back. If they return, they come back on board as a client.",
+        next:"The firm returns as a client" }
+    ]}
+  ]
+});
+
+// Digital Marketing: same two options as Website Development, no trial
+const wl = data.web.paths[0].phases[0].steps;
+const dmAfterSignup = {
+  shared:true,
+  title:"After sign-up",
+  desc:"From here, every firm follows the same steps, whichever option they came through. There is no trial: the services go live and monthly billing starts.",
+  steps:[
+    { title:"Onboarding call", sub:"We get the firm started", tags:["Intake form"],
+      who:"MYCPE ONE team", how:"Onboarding call",
+      body:"Once the firm signs up, we get on an onboarding call with them. During this call, we give them an intake form.",
+      lbl:"On the onboarding call", points:["Walk the firm through getting started","Share the intake form"],
+      next:"The firm fills in the intake form" },
+    { title:"Intake form", sub:"The firm fills in their details", tags:["All details"],
+      who:"The firm", how:"Intake form",
+      body:"The firm fills in the intake form with all the details we need to deliver their digital marketing services.",
+      next:"We set the services live" },
+    { title:"Services live", sub:"The service line goes live", tags:["Live"],
+      who:"Digital marketing team", how:"The firm’s chosen services",
+      body:"Using the intake form details, we set up the firm’s digital marketing services and the service line goes live.",
+      next:"Monthly billing starts" },
+    { title:"Monthly billing", sub:"Billed every month", tags:["Monthly"], kind:"client",
+      who:"MYCPE ONE team", how:"Monthly billing",
+      body:"Once the services are live, billing starts and the firm is billed every month. The firm is now a paying client.",
+      next:"End of the sales process" }
+  ]
+};
+data.dm = {
+  name:"Digital Marketing",
+  paths:[
+    { tab:"Option 1: Inbound & outbound sales",
+      name:"Inbound and outbound sales",
+      desc:"Prospects who come to us, or whom we reach out to, have a call with us first. On the call we send them the sign-up link.",
+      steps:[],
+      phases:[
+        { title:"Getting to sign-up", desc:"Same route as Website Development, without a trial.",
+          steps:[
+            {...wl[0], body:wl[0].body.replace("about a website","about digital marketing")},
+            {...wl[1]},
+            {...wl[2], sub:"We send the sign-up link", tags:["Sign-up link"],
+              body:"On the call we explain our digital marketing services and send the firm the sign-up link.",
+              next:"The firm receives the sign-up link"},
+            {...followUps, next:"The firm signs up"},
+            { title:"Sign-up", sub:"No trial", tags:["Sign-up link"],
+              who:"The firm", how:"Sign-up link",
+              body:"The firm signs up through the link. There is no trial for digital marketing: they go straight to onboarding.",
+              next:"The onboarding call" }
+          ]},
+        dmAfterSignup
+      ]
+    },
+    { tab:"Option 2: Direct sign-up",
+      name:"Direct sign-up",
+      desc:"Some firms skip the call and sign up on their own.",
+      steps:[],
+      phases:[
+        { title:"Getting to sign-up", desc:"No call needed: the firm signs up on its own.",
+          steps:[
+            { title:"Direct sign-up", sub:"The firm starts on its own", tags:["No call needed","No trial"],
+              who:"The firm", how:"Sign-up",
+              body:"Instead of booking a call, the firm signs up for digital marketing services directly. There is no trial: they go straight to onboarding.",
+              next:"The onboarding call" }
+          ]},
+        dmAfterSignup
+      ]
+    }
+  ]
+};
+
+const main=document.getElementById('main');
+let items=[];
+let state={biz:'offshoring',path:0};
+
+function render(){
+  const biz=data[state.biz];
+  const p=biz.paths[state.path];
+  document.getElementById('h1').textContent=`${biz.name} sales workflow`;
+  document.querySelectorAll('.tab[data-biz]').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.biz===state.biz)));
+  items=[]; main.innerHTML='';
+
+  if(biz.paths.length>1){
+    const bar=document.createElement('div'); bar.className='optbar';
+    const pick=biz.pick||{q:"Choose an option",h:`A firm can come on board in ${biz.paths.length} ways. Select one to see its process below.`};
+    bar.innerHTML=`<p class="oq">${pick.q}</p><p class="oh">${pick.h}</p>`;
+    const st=document.createElement('div'); st.className='subtabs'; st.setAttribute('role','tablist'); st.setAttribute('aria-label','Options');
+    biz.paths.forEach((x,i)=>{const [lab,ttl]=x.tab.split(': ');st.insertAdjacentHTML('beforeend',`<button class="stab" role="tab" type="button" aria-selected="${i===state.path}" data-path="${i}"><span class="on">${i+1}</span><span><small>${lab}</small><b>${ttl}</b></span></button>`);});
+    bar.appendChild(st); main.appendChild(bar);
+  }
+
+  const sec=document.createElement('section'); sec.className='path';
+  if(biz.paths.length>1) sec.classList.add('opt');
+  sec.innerHTML=`${biz.paths.length>1?`<span class="obadge">${p.tab.split(': ')[0]}</span>`:''}<h2>${p.name}</h2><p class="pdesc">${p.desc}</p>`;
+  const ol=document.createElement('ol'); ol.className='flow';
+  ol.style.setProperty('--n', p.steps.length);
+  p.steps.forEach((s,i)=>{
+    const idx=items.push({...s,pos:`Step ${i+1} of ${p.steps.length}`})-1;
+    const li=document.createElement('li');
+    li.className='step'+(s.kind?` is-${s.kind}`:'');
+    const mark = s.kind==='client'?'✓':(s.kind==='decide'?'?':i+1);
+    li.innerHTML=`<button class="node" type="button" aria-pressed="false" data-i="${idx}">
+      <span class="dot"><span>${mark}</span></span>
+      <span>
+        <div class="title">${s.title}</div>
+        <div class="sub">${s.sub}</div>
+        <div class="tags">${s.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        ${s.kind==='loop'?`<div class="loopnote">${loopIcon} ${s.loopnote||'Repeats until sign-up'}</div>`:''}
+      </span></button>`;
+    ol.appendChild(li);
+  });
+  if(!p.trial && !p.phases){ sec.appendChild(ol); }
+  else if(p.trial){
+    items=[];
+    const tf=document.createElement('div'); tf.className='tflow';
+    const node=(s,idx,num,cls='')=>`<button class="tnode ${cls}" type="button" aria-pressed="false" data-i="${idx}"><span class="n"><span>${num}</span></span><span><b>${s.title}</b><span class="t">${s.t||s.sub}</span></span></button>`;
+    p.steps.forEach((s,i)=>{
+      const idx=items.push({...s,pos:`Step ${i+1} of ${p.steps.length}`})-1;
+      if(i) tf.insertAdjacentHTML('beforeend','<div class="vl"></div>');
+      tf.insertAdjacentHTML('beforeend',node(s,idx,s.kind==='decide'?'?':i+1,s.kind||''));
+    });
+    tf.insertAdjacentHTML('beforeend','<div class="vl plain"></div>');
+    const g=document.createElement('div'); g.className='bgrid2'; g.style.setProperty('--b',p.branches.length);
+    p.branches.forEach(br=>{
+      let h=`<div class="bcol ${br.cls}"><div class="vl top"></div><span class="blabel">${br.title}</span><p class="bdesc">${br.desc}</p>`;
+      br.steps.forEach((s,i)=>{
+        const idx=items.push({...s,pos:`${br.title}: step ${i+1} of ${br.steps.length}`})-1;
+        h+=`<div class="vl"></div>`+node(s,idx,s.kind==='client'?'✓':i+1);
+        if(s.pills){ const pl=s.pills===true?[['con','Sign up'],['can','Cancelled']]:s.pills; h+=`<div class="vl"></div><div class="fork">${pl.map(([c,l])=>`<span class="pill ${c}">${l}</span>`).join('<span class="or">or</span>')}</div>`; }
+      });
+      g.insertAdjacentHTML('beforeend',h+'</div>');
+    });
+    tf.appendChild(g); sec.appendChild(tf);
+  }
+
+  if(p.side){
+    const sd=document.createElement('div'); sd.className='side';
+    sd.innerHTML=`<p class="bhead">${p.sideTitle}</p><p class="bsub">${p.sideDesc}</p>`;
+    const g=document.createElement('div'); g.className='sgrid';
+    p.side.forEach(s=>{
+      const idx=items.push({...s,pos:`Other status: ${s.when}`})-1;
+      g.insertAdjacentHTML('beforeend',`<button class="sc ${s.cls}" type="button" aria-pressed="false" data-i="${idx}"><b>${s.title}</b><span class="when">${s.when}</span><span class="t">${s.t}</span></button>`);
+    });
+    sd.appendChild(g); sec.appendChild(sd);
+  }
+
+  if(p.phases){
+    let n=0; const total=p.phases.reduce((a,ph)=>a+ph.steps.length,0);
+    p.phases.forEach((ph,pi)=>{
+      if(pi) sec.insertAdjacentHTML('beforeend','<div class="phlink"><div class="vl"></div></div>');
+      const box=document.createElement('div'); box.className='phase'+(ph.shared?' shared':'');
+      box.innerHTML=`<p class="phead">${ph.title}${ph.shared&&biz.paths.length>1?'<span class="sbadge">Same for both options</span>':''}</p><p class="pdesc">${ph.desc}</p>`;
+      const o=document.createElement('ol'); o.className='flow'; o.style.setProperty('--n',ph.steps.length);
+      ph.steps.forEach(s=>{ n++; const idx=items.push({...s,pos:`Step ${n} of ${total}`})-1; o.insertAdjacentHTML('beforeend',stepLI(s,idx,n)); });
+      box.appendChild(o); sec.appendChild(box);
+    });
+  }
+
+  const d=document.createElement('article'); d.className='detail'; d.id='detail'; d.setAttribute('aria-live','polite');
+  sec.appendChild(d);
+  main.appendChild(sec);
+  show(0);
+}
+
+function show(i){
+  const s=items[i];
+  main.querySelectorAll('[data-i]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.i===i)));
+  document.getElementById('detail').innerHTML=`
+    <div>
+      <div class="num">${s.pos}</div>
+      <h3>${s.title}</h3>
+      <p>${s.body}</p>
+      ${s.points?`<p class="lbl">${s.lbl}</p><ul>${s.points.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}
+    </div>
+    <dl>
+      <dt>Who’s involved</dt><dd>${s.who}</dd>
+      <dt>Channel or tool</dt><dd>${s.how}</dd>
+      <dt>What comes next</dt><dd>${s.next}</dd>
+    </dl>${s.sources?srcHTML:''}`;
+}
+
+main.addEventListener('click',e=>{
+  const sp=e.target.closest('[data-path]'); if(sp){state.path=+sp.dataset.path; render(); return;}
+  const b=e.target.closest('[data-i]'); if(!b) return;
+  show(+b.dataset.i);
+  const d=document.getElementById('detail'), r=d.getBoundingClientRect();
+  if(r.top>innerHeight-140) d.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});
+});
+document.querySelectorAll('.tab[data-biz]').forEach(t=>t.addEventListener('click',()=>{state={biz:t.dataset.biz,path:0}; render();}));
+render();
+</script>
+</body>
+</html>
