@@ -250,9 +250,9 @@ const data = {
           who:"Sales team", how:"Offshore Services sign-up",
           body:"The prospect completes the sign-up. This is the moment the deal is won.",
           next:"Sign-up is complete" },
-        { title:"Client, handed to CTAT", sub:"Lead becomes a client", tags:["CTAT"], kind:"client",
-          who:"CTAT", how:"Internal handover",
-          body:"Once sign-up is done, the lead becomes a client and is handed over to CTAT, who take it forward from here.",
+        { title:"Client, handed to CTA", sub:"Lead becomes a client", tags:["CTA"], kind:"client",
+          who:"CTA (Client and Team Success Advisor)", how:"Internal handover",
+          body:"Once sign-up is done, the lead becomes a client and is handed over to a CTA, our Client and Team Success Advisor, who takes it forward from here as the client’s point of contact.",
           next:"End of the sales process" }
       ]
     }]
@@ -279,8 +279,8 @@ const data = {
           followUps,
           { title:"Sign-up or invoice", sub:"Two ways to come on board", tags:["Sign-up","Invoice"],
             who:"Sales team", how:"Online sign-up or invoice",
-            body:"The firm comes on board in one of two ways. Most sign up directly. Sometimes the firm asks for an invoice, or we send one, and they come on board once it’s settled.",
-            lbl:"Two ways to close", points:["Direct sign-up to a paid account","Invoice sent and paid, then onboarded"],
+            body:"The firm comes on board in one of two ways: they sign up online, or we generate an invoice and they pay it.",
+            lbl:"Two ways to close", points:["Sign up online for a paid account","We generate an invoice, the firm pays it, then they’re onboarded"],
             next:"The account is paid" },
           { title:"Paid account", sub:"Firm onboarded as a client", tags:["Client"], kind:"client",
             who:"MYCPE ONE team", how:"Onboarding",
@@ -316,8 +316,8 @@ const data = {
               next:"The firm signs up or asks for an invoice" },
             { title:"Sign-up or invoice", t:"Two ways to pay",
               who:"Sales team", how:"Online sign-up or invoice",
-              body:"Just like Option 1, the firm comes on board in one of two ways: signing up directly for a paid account, or receiving an invoice and paying it.",
-              lbl:"Two ways to close", points:["Direct sign-up to a paid account","Invoice sent and paid, then onboarded"],
+              body:"Just like Option 1, the firm comes on board in one of two ways: they sign up online, or we generate an invoice and they pay it.",
+              lbl:"Two ways to close", points:["Sign up online for a paid account","We generate an invoice, the firm pays it, then they’re onboarded"],
               next:"The account is paid" },
             { title:"Paid account", t:"Onboarded as a client", kind:"client",
               who:"MYCPE ONE team", how:"Onboarding",
@@ -453,23 +453,24 @@ function stepLI(s,idx,num){
 // Offshoring: two stages
 const off = data.offshoring;
 off.pick = { q:"Choose a stage", h:"Follow a prospect through the sales process, then follow the client through onboarding after sign-up." };
-Object.assign(off.paths[0], { tab:"Stage 1: Sales process", name:"Sales process", desc:"From first contact to sign-up, when the lead becomes a client and is handed over to CTAT." });
+Object.assign(off.paths[0], { tab:"Stage 1: Sales process", name:"Sales process", desc:"From first contact to sign-up, when the lead becomes a client and is handed over to a CTA (Client and Team Success Advisor)." });
 off.paths[0].steps[5].next = "Stage 2: After sign-up";
 off.paths.push({
   tab:"Stage 2: After sign-up",
   name:"After sign-up",
   desc:"Once a client signs up, their account moves through these statuses. Most clients follow the main path to Active. The other statuses below cover what happens when things don’t go to plan.",
   steps:[
-    { title:"Assign to Employee", sub:"An owner for the client", tags:["Status 1"],
-      who:"CTAT", how:"Internal assignment",
-      body:"After the handover, the new client is assigned to a team member, who looks after the client through onboarding.",
-      next:"Introduction Email Sent" },
-    { title:"Introduction Email Sent", sub:"We introduce ourselves", tags:["Status 2"],
-      who:"Assigned team member", how:"Email",
-      body:"The assigned team member sends the client an introduction email to start onboarding.",
+    { title:"POC assigned", sub:"A CTA becomes the client’s POC", tags:["Status 1","CTA"],
+      who:"CTA (Client and Team Success Advisor)", how:"POC assignment",
+      body:"After sign-up, the client is assigned a point of contact (POC): their CTA, our Client and Team Success Advisor. The CTA is the person the client goes to for anything about their onboarding and their offshore team.",
+      lbl:"What the CTA does", points:["Acts as the client’s single point of contact (POC)","Guides the client through every onboarding status","Looks after both the client and their offshore team"],
+      next:"The CTA sends the introduction email" },
+    { title:"Introduction Email Sent", sub:"The CTA introduces themselves", tags:["Status 2"],
+      who:"CTA", how:"Email",
+      body:"The CTA sends the client an introduction email, introducing themselves as the client’s point of contact and starting the onboarding.",
       next:"Resumes Sent" },
     { title:"Resumes Sent", sub:"Candidates shared", tags:["Status 3"],
-      who:"Assigned team member", how:"Email",
+      who:"CTA", how:"Email",
       body:"We source suitable candidates for the client’s requirements and send them their resumes.",
       next:"Interview Done" },
     { title:"Interview Done", sub:"The client meets candidates", tags:["Status 4"],
@@ -481,7 +482,7 @@ off.paths.push({
       body:"The client confirms the staff they want to hire.",
       next:"Active" },
     { title:"Active", sub:"Staff working, client billed", tags:["Weekly invoicing"], kind:"client",
-      who:"CTAT", how:"Weekly invoice",
+      who:"CTA", how:"Weekly invoice",
       body:"The client is now active: their staff are in place, and invoicing starts on a weekly basis.",
       lbl:"What changes at Active", points:["The client’s confirmed staff start working","Invoicing starts, sent weekly"],
       next:"The ongoing client relationship" }
@@ -490,11 +491,11 @@ off.paths.push({
   sideDesc:"A client can move to one of these statuses instead of following the main path. Select one to learn more.",
   side:[
     { cls:"ext", title:"On Hold", when:"During onboarding", t:"Onboarding is paused for now.",
-      who:"CTAT", how:"Status update",
+      who:"CTA", how:"Status update",
       body:"The client’s onboarding is put on hold. It is paused rather than closed, so it can pick up again later.",
       next:"Onboarding picks up again when the client is ready" },
     { cls:"can", title:"Unsuccessful Onboarding", when:"During onboarding", t:"We could not source suitable candidates.",
-      who:"CTAT", how:"Status update",
+      who:"CTA", how:"Status update",
       body:"If we are unable to source suitable candidates for the client, onboarding is marked as unsuccessful.",
       next:"Onboarding closes" },
     { cls:"brand", title:"Back to Sales", when:"Client unresponsive", t:"Sales finds out why and plans a future date.",
@@ -503,7 +504,7 @@ off.paths.push({
       lbl:"What Sales does", points:["Find out why the client went quiet","Agree on a future date to restart"],
       next:"Onboarding restarts on the agreed date" },
     { cls:"can", title:"Lost", when:"After Active", t:"The client ends the relationship.",
-      who:"CTAT", how:"Status update",
+      who:"CTA", how:"Status update",
       body:"After working with us in an active relationship, the client decides to terminate the engagement.",
       next:"The client relationship ends" }
   ]
@@ -511,7 +512,7 @@ off.paths.push({
 
 // CPE for Teams: after onboarding
 const cpe = data.cpe;
-cpe.pick = { q:"Choose a view", h:"A firm can come on board in two ways. The third view shows what happens once they’re a client: users, renewal and win-back." };
+cpe.pick = { q:"Choose a view", h:"A firm can come on board in three ways. The last view shows what happens once they’re a client: users, renewal and win-back." };
 cpe.paths[0].steps[5].next = "See After onboarding: users, renewal and win-back";
 cpe.paths[1].branches[0].steps[2].next = "See After onboarding: users, renewal and win-back";
 cpe.paths.push({
@@ -560,6 +561,37 @@ cpe.paths.push({
         body:"A cancelled firm isn’t gone for good. Later on, we reach out again to win them back. If they return, they come back on board as a client.",
         next:"The firm returns as a client" }
     ]}
+  ]
+});
+cpe.paths.splice(2,0,{
+  tab:"Option 3: RFP (Request for Proposal)",
+  name:"RFP (Request for Proposal)",
+  desc:"Some firms run a formal RFP (Request for Proposal) process. We respond to their RFP, give them a 30-day free trial if they need one, and then invoice them. Once the invoice is paid, the account goes active.",
+  steps:[
+    { title:"RFP received", sub:"The firm requests a proposal", tags:["RFP"],
+      who:"The firm", how:"Request for proposal",
+      body:"The firm sends us an RFP (Request for Proposal), asking providers to explain how they would meet the firm’s CPE needs.",
+      next:"We prepare and submit our RFP response" },
+    { title:"RFP response", sub:"We submit our proposal", tags:["RFP response"],
+      who:"Sales team", how:"RFP response",
+      body:"We prepare and submit our RFP response, answering the firm’s questions and showing how CPE for Teams meets their requirements.",
+      next:"A 30-day free trial if the firm needs one, otherwise the invoice" },
+    { title:"30-day free trial", sub:"Only if the firm needs it", tags:["30 days free","If needed"], kind:"loop", loopnote:"Optional step",
+      who:"The firm, supported by the sales team", how:"CPE for Teams platform",
+      body:"If the firm wants to try the platform before deciding, we give them a 30-day free trial. If they don’t need one, this step is skipped and we go straight to the invoice.",
+      next:"We send the invoice" },
+    { title:"Invoice sent", sub:"We bill the firm", tags:["Invoice"],
+      who:"Sales team", how:"Invoice",
+      body:"Once the firm chooses us, we send them an invoice.",
+      next:"The firm pays the invoice" },
+    { title:"Invoice paid", sub:"The firm pays", tags:["Payment"],
+      who:"The firm", how:"Invoice payment",
+      body:"The firm pays the invoice.",
+      next:"The account goes active" },
+    { title:"Account active", sub:"Firm onboarded as a client", tags:["Client"], kind:"client",
+      who:"MYCPE ONE team", how:"Onboarding",
+      body:"With the invoice paid, the account goes active and the firm is onboarded as a CPE for Teams client.",
+      next:"See After onboarding: users, renewal and win-back" }
   ]
 });
 
